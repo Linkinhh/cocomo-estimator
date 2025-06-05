@@ -38,7 +38,7 @@ export default function Cocomo81DocsPage() {
             <div className="bg-blue-50 p-4 rounded-lg">
               <h4 className="font-semibold mb-2">Ecuación Principal:</h4>
               <p className="font-mono text-sm">Esfuerzo = a × (KLOC)^b × EAF</p>
-              <p className="font-mono text-sm">Tiempo = c × (Esfuerzo)^d</p>
+              <p className="font-mono text-sm">Tiempo = 2.5 × (Esfuerzo)^c</p>
               <p className="text-sm text-gray-600 mt-2">
                 Donde EAF es el producto de todos los multiplicadores de esfuerzo
               </p>
@@ -66,7 +66,7 @@ export default function Cocomo81DocsPage() {
               <TableBody>
                 <TableRow>
                   <TableCell className="font-medium">Orgánico</TableCell>
-                  <TableCell>2.4</TableCell>
+                  <TableCell>3.2</TableCell>
                   <TableCell>1.05</TableCell>
                   <TableCell>0.38</TableCell>
                   <TableCell>Equipos pequeños, experiencia en aplicaciones similares, requisitos flexibles</TableCell>
@@ -80,7 +80,7 @@ export default function Cocomo81DocsPage() {
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Empotrado</TableCell>
-                  <TableCell>3.6</TableCell>
+                  <TableCell>2.8</TableCell>
                   <TableCell>1.20</TableCell>
                   <TableCell>0.32</TableCell>
                   <TableCell>Proyectos con fuertes restricciones de hardware, software y operacionales</TableCell>
@@ -94,14 +94,15 @@ export default function Cocomo81DocsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Multiplicadores de Esfuerzo (EAF)</CardTitle>
-            <CardDescription>15 factores que ajustan la estimación básica</CardDescription>
+            <CardDescription>15 Conductores de Coste que ajustan la estimación básica</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="product">
-              <TabsList className="grid grid-cols-3 mb-4">
+              <TabsList className="grid grid-cols-4 mb-4">
                 <TabsTrigger value="product">Atributos del Producto</TabsTrigger>
                 <TabsTrigger value="hardware">Atributos de Hardware</TabsTrigger>
                 <TabsTrigger value="personnel">Atributos del Personal</TabsTrigger>
+                <TabsTrigger value="project">Atributos del Proyecto</TabsTrigger>
               </TabsList>
 
               <TabsContent value="product">
@@ -115,17 +116,17 @@ export default function Cocomo81DocsPage() {
                   </TableHeader>
                   <TableBody>
                     <TableRow>
-                      <TableCell className="font-medium">RELY</TableCell>
-                      <TableCell>Fiabilidad requerida del software</TableCell>
+                      <TableCell className="font-medium">RSS</TableCell>
+                      <TableCell>Requerimientos de Seguridad del Software</TableCell>
                       <TableCell>0.75 - 1.40</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-medium">DATA</TableCell>
+                      <TableCell className="font-medium">TBD</TableCell>
                       <TableCell>Tamaño de la base de datos</TableCell>
                       <TableCell>0.94 - 1.16</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-medium">CPLX</TableCell>
+                      <TableCell className="font-medium">CPR</TableCell>
                       <TableCell>Complejidad del producto</TableCell>
                       <TableCell>0.70 - 1.65</TableCell>
                     </TableRow>
@@ -133,14 +134,13 @@ export default function Cocomo81DocsPage() {
                 </Table>
                 <div className="mt-4 space-y-2 text-sm text-gray-600">
                   <p>
-                    <strong>RELY:</strong> Mide el impacto de fallos del software. Valores altos para sistemas críticos.
+                    <strong>RSS:</strong> Considera el efecto que pudiera proporcionar una falla en el sistema (costo dinero, vidas).
                   </p>
                   <p>
-                    <strong>DATA:</strong> Relación entre el tamaño de la base de datos y el programa. D/P donde D es
-                    bytes de datos y P es SLOC.
+                    <strong>TBD:</strong> Se toma el tamaño de la BDx en Kilobytes (Kb) y se divide entre KLDC estimados en el software.
                   </p>
                   <p>
-                    <strong>CPLX:</strong> Evaluación subjetiva de la complejidad del producto basada en estructuras de
+                    <strong>CPR:</strong> Evaluación subjetiva de la complejidad del producto basada en estructuras de
                     control, operaciones computacionales, etc.
                   </p>
                 </div>
@@ -157,39 +157,39 @@ export default function Cocomo81DocsPage() {
                   </TableHeader>
                   <TableBody>
                     <TableRow>
-                      <TableCell className="font-medium">TIME</TableCell>
+                      <TableCell className="font-medium">RTE</TableCell>
                       <TableCell>Restricciones de tiempo de ejecución</TableCell>
                       <TableCell>1.00 - 1.66</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-medium">STOR</TableCell>
-                      <TableCell>Restricciones de almacenamiento principal</TableCell>
-                      <TableCell>1.00 - 1.56</TableCell>
+                      <TableCell className="font-medium">RMP</TableCell>
+                      <TableCell>Restricciones de Memoria Principal</TableCell>
+                      <TableCell>1.00 - 1.58</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-medium">VIRT</TableCell>
-                      <TableCell>Volatilidad de la máquina virtual</TableCell>
+                      <TableCell className="font-medium">VMC</TableCell>
+                      <TableCell>Velocidad con que Cambian los Medios de Computo</TableCell>
                       <TableCell>0.87 - 1.30</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-medium">TURN</TableCell>
-                      <TableCell>Tiempo de respuesta requerido</TableCell>
+                      <TableCell className="font-medium">TRC</TableCell>
+                      <TableCell>Tiempo de Respuesta del Computador</TableCell>
                       <TableCell>0.87 - 1.15</TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
                 <div className="mt-4 space-y-2 text-sm text-gray-600">
                   <p>
-                    <strong>TIME:</strong> Porcentaje de tiempo de CPU disponible usado por el software.
+                    <strong>RTE:</strong> Porcentaje de tiempo de CPU disponible usado por el software.
                   </p>
                   <p>
-                    <strong>STOR:</strong> Porcentaje de memoria disponible usado por el software.
+                    <strong>RMP:</strong> Porcentaje de memoria disponible usado por el software.
                   </p>
                   <p>
-                    <strong>VIRT:</strong> Frecuencia de cambios en el entorno de desarrollo (hardware/software).
+                    <strong>VMC:</strong> Frecuencia de cambios en el entorno de desarrollo (hardware/software).
                   </p>
                   <p>
-                    <strong>TURN:</strong> Tiempo entre envío de trabajo y recepción de resultados.
+                    <strong>TRC:</strong> Tiempo entre envío de trabajo y recepción de resultados.
                   </p>
                 </div>
               </TabsContent>
@@ -205,71 +205,87 @@ export default function Cocomo81DocsPage() {
                   </TableHeader>
                   <TableBody>
                     <TableRow>
-                      <TableCell className="font-medium">ACAP</TableCell>
+                      <TableCell className="font-medium">CAN</TableCell>
                       <TableCell>Capacidad del analista</TableCell>
                       <TableCell>0.71 - 1.46</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-medium">AEXP</TableCell>
-                      <TableCell>Experiencia en aplicaciones</TableCell>
+                      <TableCell className="font-medium">EAN</TableCell>
+                      <TableCell>Experiencia de los Analistas</TableCell>
                       <TableCell>0.82 - 1.29</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-medium">PCAP</TableCell>
-                      <TableCell>Capacidad del programador</TableCell>
+                      <TableCell className="font-medium">CPRO</TableCell>
+                      <TableCell>Capacidad de los Programadores</TableCell>
                       <TableCell>0.70 - 1.42</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-medium">VEXP</TableCell>
-                      <TableCell>Experiencia en la máquina virtual</TableCell>
+                      <TableCell className="font-medium">ESO</TableCell>
+                      <TableCell>Experiencia en el Sistema Operativo</TableCell>
                       <TableCell>0.90 - 1.21</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-medium">LEXP</TableCell>
-                      <TableCell>Experiencia en el lenguaje de programación</TableCell>
+                      <TableCell className="font-medium">ELP</TableCell>
+                      <TableCell>Experiencia en el Lenguaje de Programación</TableCell>
                       <TableCell>0.95 - 1.14</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-medium">MODP</TableCell>
-                      <TableCell>Uso de prácticas modernas de programación</TableCell>
-                      <TableCell>0.82 - 1.24</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-medium">TOOL</TableCell>
-                      <TableCell>Uso de herramientas de software</TableCell>
-                      <TableCell>0.83 - 1.24</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-medium">SCED</TableCell>
-                      <TableCell>Cronograma requerido de desarrollo</TableCell>
-                      <TableCell>1.04 - 1.23</TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
                 <div className="mt-4 space-y-2 text-sm text-gray-600">
                   <p>
-                    <strong>ACAP:</strong> Capacidad de análisis y diseño, eficiencia y comunicación.
+                    <strong>CAN:</strong> Capacidad de análisis y diseño, eficiencia y comunicación.
                   </p>
                   <p>
-                    <strong>AEXP:</strong> Experiencia del equipo en aplicaciones similares.
+                    <strong>EAN:</strong> Experiencia de los analistas en aplicaciones similares.
                   </p>
                   <p>
-                    <strong>PCAP:</strong> Capacidad de programación, eficiencia y comunicación.
+                    <strong>CPRO:</strong> Capacidad de programación, eficiencia y comunicación.
                   </p>
                   <p>
-                    <strong>VEXP:</strong> Experiencia en el sistema operativo y hardware objetivo.
+                    <strong>ESO:</strong> Experiencia en el sistema operativo y hardware objetivo.
                   </p>
                   <p>
-                    <strong>LEXP:</strong> Experiencia en el lenguaje de programación a usar.
+                    <strong>ELP:</strong> Experiencia en el lenguaje de programación a usar.
+                  </p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="project">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Factor</TableHead>
+                      <TableHead>Descripción</TableHead>
+                      <TableHead>Rango de Valores</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>                    
+                    <TableRow>
+                      <TableCell className="font-medium">UTP</TableCell>
+                      <TableCell>Uso de Técnicas Modernas de Programación</TableCell>
+                      <TableCell>0.82 - 1.24</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium">UHS</TableCell>
+                      <TableCell>Uso de Modernas Herramientas de Software</TableCell>
+                      <TableCell>0.70 - 1.24</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium">RPL</TableCell>
+                      <TableCell>Requisitos de Planificación</TableCell>
+                      <TableCell>1.10 - 1.23</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+                <div className="mt-4 space-y-2 text-sm text-gray-600">                  
+                  <p>
+                    <strong>UTP:</strong> Considera el uso de modernas técnicas de programación como: Orientado a Objetos.
                   </p>
                   <p>
-                    <strong>MODP:</strong> Uso de técnicas como programación estructurada, revisiones de diseño, etc.
+                    <strong>UHS:</strong> Es la cantidad de herramientas que se usan para el desarrollo del Software.
                   </p>
                   <p>
-                    <strong>TOOL:</strong> Uso de herramientas de desarrollo como compiladores, depuradores, etc.
-                  </p>
-                  <p>
-                    <strong>SCED:</strong> Restricciones de cronograma impuestas al proyecto.
+                    <strong>RPL:</strong> Requisitos de Planificación.
                   </p>
                 </div>
               </TabsContent>
