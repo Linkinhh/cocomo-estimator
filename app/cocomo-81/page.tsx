@@ -58,28 +58,28 @@ export default function Cocomo81Page() {
 
   // Estado para los multiplicadores de esfuerzo (todos inicializados en valor nominal = 1.0)
   const [eafValues, setEafValues] = useState({
-    rely: 1.0, // Fiabilidad requerida del software
-    data: 1.0, // Tamaño de la base de datos
-    cplx: 1.0, // Complejidad del producto
-    time: 1.0, // Restricciones de tiempo de ejecución
-    stor: 1.0, // Restricciones de almacenamiento principal
-    virt: 1.0, // Volatilidad de la máquina virtual
-    turn: 1.0, // Tiempo de respuesta requerido
-    acap: 1.0, // Capacidad del analista
-    aexp: 1.0, // Experiencia en aplicaciones
-    pcap: 1.0, // Capacidad del programador
-    vexp: 1.0, // Experiencia en la máquina virtual
-    lexp: 1.0, // Experiencia en el lenguaje de programación
-    modp: 1.0, // Uso de prácticas modernas de programación
-    tool: 1.0, // Uso de herramientas de software
-    sced: 1.0, // Cronograma requerido de desarrollo
+    rss: 1.0, // Fiabilidad requerida del software
+    tbd: 1.0, // Tamaño de la base de datos
+    cpr: 1.0, // Complejidad del producto
+    rte: 1.0, // Restricciones de tiempo de ejecución
+    rmp: 1.0, // Restricciones de almacenamiento principal
+    vmc: 1.0, // Volatilidad de la máquina virtual
+    trc: 1.0, // Tiempo de respuesta requerido
+    can: 1.0, // Capacidad del analista
+    ean: 1.0, // Experiencia en aplicaciones
+    cpro: 1.0, // Capacidad del programador
+    eso: 1.0, // Experiencia en la máquina virtual
+    elp: 1.0, // Experiencia en el lenguaje de programación
+    utp: 1.0, // Uso de prácticas modernas de programación
+    uhs: 1.0, // Uso de herramientas de software
+    rpl: 1.0, // Cronograma requerido de desarrollo
   })
 
   // Coeficientes según el tipo de proyecto
   const coefficients = {
-    organic: { a: 2.4, b: 1.05, c: 0.38 },
+    organic: { a: 3.2, b: 1.05, c: 0.38 },
     semidetached: { a: 3.0, b: 1.12, c: 0.35 },
-    embedded: { a: 3.6, b: 1.2, c: 0.32 },
+    embedded: { a: 2.8, b: 1.2, c: 0.32 },
   }
 
   // Calcular el EAF (Factor de Ajuste de Esfuerzo)
@@ -91,7 +91,8 @@ export default function Cocomo81Page() {
   const calculateEffort = () => {
     const { a, b } = coefficients[projectType as keyof typeof coefficients]
     const eaf = calculateEAF()
-    return a * Math.pow(kloc, b) * eaf
+    const effort = a * Math.pow(kloc, b) * eaf
+    return Math.round(effort * 100) / 100  // redondea a 2 decimales como número
   }
 
   // Calcular el tiempo de desarrollo (meses)
@@ -135,39 +136,39 @@ export default function Cocomo81Page() {
 
   // Descripción de los factores EAF
   const eafDescriptions = {
-    rely: "Fiabilidad requerida del software",
-    data: "Tamaño de la base de datos",
-    cplx: "Complejidad del producto",
-    time: "Restricciones de tiempo de ejecución",
-    stor: "Restricciones de almacenamiento principal",
-    virt: "Volatilidad de la máquina virtual",
-    turn: "Tiempo de respuesta requerido",
-    acap: "Capacidad del analista",
-    aexp: "Experiencia en aplicaciones",
-    pcap: "Capacidad del programador",
-    vexp: "Experiencia en la máquina virtual",
-    lexp: "Experiencia en el lenguaje de programación",
-    modp: "Uso de prácticas modernas de programación",
-    tool: "Uso de herramientas de software",
-    sced: "Cronograma requerido de desarrollo",
+    rss: "Requerimientos de Seguridad del Software",
+    tbd: "Tamaño de la base de datos",
+    cpr: "Complejidad del producto",
+    rte: "Restricciones de tiempo de ejecución",
+    rmp: "Restricciones de memoria principal",
+    vmc: "Velocidad con que Cambian los Medios de Computo",
+    trc: "Tiempo de respuesta del computador",
+    can: "Capacidad del analista",
+    ean: "Experiencia de los analistas",
+    cpro: "Capacidad de los programadores",
+    eso: "Experiencia en el Sistema Operativo",
+    elp: "Experiencia en el Lenguaje de Programación",
+    utp: "Uso de prácticas modernas de programación",
+    uhs: "Uso de Modernas Herramientas de Software",
+    rpl: "Requisitos de Planificación",
   }
 
   // Valores posibles para cada factor EAF
   const eafOptions = {
-    rely: [
+    rss: [
       { label: "Muy bajo", value: 0.75 },
       { label: "Bajo", value: 0.88 },
       { label: "Nominal", value: 1.0 },
       { label: "Alto", value: 1.15 },
       { label: "Muy alto", value: 1.4 },
     ],
-    data: [
+    tbd: [
       { label: "Bajo", value: 0.94 },
       { label: "Nominal", value: 1.0 },
       { label: "Alto", value: 1.08 },
       { label: "Muy alto", value: 1.16 },
     ],
-    cplx: [
+    cpr: [
       { label: "Muy bajo", value: 0.7 },
       { label: "Bajo", value: 0.85 },
       { label: "Nominal", value: 1.0 },
@@ -175,78 +176,79 @@ export default function Cocomo81Page() {
       { label: "Muy alto", value: 1.3 },
       { label: "Extra alto", value: 1.65 },
     ],
-    time: [
+    rte: [
       { label: "Nominal", value: 1.0 },
       { label: "Alto", value: 1.11 },
       { label: "Muy alto", value: 1.3 },
       { label: "Extra alto", value: 1.66 },
     ],
-    stor: [
+    rmp: [
       { label: "Nominal", value: 1.0 },
       { label: "Alto", value: 1.06 },
-      { label: "Muy alto", value: 1.21 },
-      { label: "Extra alto", value: 1.56 },
+      { label: "Muy alto", value: 1.3 },
+      { label: "Extra alto", value: 1.58 },
     ],
-    virt: [
+    vmc: [
       { label: "Bajo", value: 0.87 },
       { label: "Nominal", value: 1.0 },
       { label: "Alto", value: 1.15 },
       { label: "Muy alto", value: 1.3 },
     ],
-    turn: [
+    trc: [
       { label: "Bajo", value: 0.87 },
       { label: "Nominal", value: 1.0 },
       { label: "Alto", value: 1.07 },
       { label: "Muy alto", value: 1.15 },
     ],
-    acap: [
+    can: [
       { label: "Muy bajo", value: 1.46 },
       { label: "Bajo", value: 1.19 },
       { label: "Nominal", value: 1.0 },
       { label: "Alto", value: 0.86 },
       { label: "Muy alto", value: 0.71 },
     ],
-    aexp: [
+    ean: [
       { label: "Muy bajo", value: 1.29 },
       { label: "Bajo", value: 1.13 },
       { label: "Nominal", value: 1.0 },
       { label: "Alto", value: 0.91 },
       { label: "Muy alto", value: 0.82 },
     ],
-    pcap: [
+    cpro: [
       { label: "Muy bajo", value: 1.42 },
       { label: "Bajo", value: 1.17 },
       { label: "Nominal", value: 1.0 },
       { label: "Alto", value: 0.86 },
       { label: "Muy alto", value: 0.7 },
     ],
-    vexp: [
+    eso: [
       { label: "Muy bajo", value: 1.21 },
-      { label: "Bajo", value: 1.1 },
+      { label: "Bajo", value: 1.12 },
       { label: "Nominal", value: 1.0 },
-      { label: "Alto", value: 0.9 },
+      { label: "Alto", value: 0.96 },
     ],
-    lexp: [
+    elp: [
       { label: "Muy bajo", value: 1.14 },
-      { label: "Bajo", value: 1.07 },
+      { label: "Bajo", value: 1.10 },
       { label: "Nominal", value: 1.0 },
       { label: "Alto", value: 0.95 },
     ],
-    modp: [
+    utp: [
       { label: "Muy bajo", value: 1.24 },
       { label: "Bajo", value: 1.1 },
       { label: "Nominal", value: 1.0 },
       { label: "Alto", value: 0.91 },
       { label: "Muy alto", value: 0.82 },
     ],
-    tool: [
+    uhs: [
       { label: "Muy bajo", value: 1.24 },
       { label: "Bajo", value: 1.1 },
       { label: "Nominal", value: 1.0 },
       { label: "Alto", value: 0.91 },
       { label: "Muy alto", value: 0.83 },
+      { label: "Extra alto", value: 0.70 },
     ],
-    sced: [
+    rpl: [
       { label: "Muy bajo", value: 1.23 },
       { label: "Bajo", value: 1.08 },
       { label: "Nominal", value: 1.0 },
@@ -504,7 +506,7 @@ export default function Cocomo81Page() {
                     <p className="ml-4">E = a × (KLOC)^b × EAF</p>
 
                     <p className="mt-3"><strong>Tiempo de desarrollo (meses):</strong></p>
-                    <p className="ml-4">T = c × (E)^d</p>
+                    <p className="ml-4">T = 2.5 × (E)^c</p>
 
                     <p className="mt-3"><strong>Personal promedio:</strong></p>
                     <p className="ml-4">P = E / T</p>
@@ -529,15 +531,13 @@ export default function Cocomo81Page() {
                         <TableHead>a</TableHead>
                         <TableHead>b</TableHead>
                         <TableHead>c</TableHead>
-                        <TableHead>d</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       <TableRow className={projectType === "organic" ? "bg-blue-100" : ""}>
                         <TableCell className="font-medium">Orgánico</TableCell>
-                        <TableCell>2.4</TableCell>
+                        <TableCell>3.2</TableCell>
                         <TableCell>1.05</TableCell>
-                        <TableCell>0.38</TableCell>
                         <TableCell>0.38</TableCell>
                       </TableRow>
                       <TableRow className={projectType === "semidetached" ? "bg-blue-100" : ""}>
@@ -545,13 +545,11 @@ export default function Cocomo81Page() {
                         <TableCell>3.0</TableCell>
                         <TableCell>1.12</TableCell>
                         <TableCell>0.35</TableCell>
-                        <TableCell>0.35</TableCell>
                       </TableRow>
                       <TableRow className={projectType === "embedded" ? "bg-blue-100" : ""}>
                         <TableCell className="font-medium">Empotrado</TableCell>
-                        <TableCell>3.6</TableCell>
+                        <TableCell>2.8</TableCell>
                         <TableCell>1.20</TableCell>
-                        <TableCell>0.32</TableCell>
                         <TableCell>0.32</TableCell>
                       </TableRow>
                     </TableBody>
@@ -633,14 +631,15 @@ export default function Cocomo81Page() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="product">
-              <TabsList className="grid grid-cols-3 mb-4">
+              <TabsList className="grid grid-cols-4 mb-4">
                 <TabsTrigger value="product">Atributos del Producto</TabsTrigger>
                 <TabsTrigger value="hardware">Atributos de Hardware</TabsTrigger>
                 <TabsTrigger value="personnel">Atributos del Personal</TabsTrigger>
+                <TabsTrigger value="project">Atributos del Proyecto</TabsTrigger>
               </TabsList>
 
               <TabsContent value="product" className="space-y-4">
-                {["rely", "data", "cplx"].map((factor) => (
+                {["rss", "tbd", "cpr"].map((factor) => (
                   <div key={factor} className="space-y-2">
                     <div className="flex items-center">
                       <Label className="mr-2">{eafDescriptions[factor as keyof typeof eafDescriptions]}</Label>
@@ -675,7 +674,7 @@ export default function Cocomo81Page() {
               </TabsContent>
 
               <TabsContent value="hardware" className="space-y-4">
-                {["time", "stor", "virt", "turn"].map((factor) => (
+                {["rte", "rmp", "vmc", "trc"].map((factor) => (
                   <div key={factor} className="space-y-2">
                     <div className="flex items-center">
                       <Label className="mr-2">{eafDescriptions[factor as keyof typeof eafDescriptions]}</Label>
@@ -710,7 +709,42 @@ export default function Cocomo81Page() {
               </TabsContent>
 
               <TabsContent value="personnel" className="space-y-4">
-                {["acap", "aexp", "pcap", "vexp", "lexp", "modp", "tool", "sced"].map((factor) => (
+                {["can", "ean", "cpro", "eso", "elp"].map((factor) => (
+                  <div key={factor} className="space-y-2">
+                    <div className="flex items-center">
+                      <Label className="mr-2">{eafDescriptions[factor as keyof typeof eafDescriptions]}</Label>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <InfoCircle className="h-4 w-4" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">Valor actual: {eafValues[factor as keyof typeof eafValues]}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    <Select
+                      value={eafValues[factor as keyof typeof eafValues].toString()}
+                      onValueChange={(value) => updateEAF(factor, Number.parseFloat(value))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccione valor" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {eafOptions[factor as keyof typeof eafOptions].map((option, index) => (
+                          <SelectItem key={index} value={option.value.toString()}>
+                            {option.label} ({option.value})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ))}
+              </TabsContent>
+
+              <TabsContent value="project" className="space-y-4">
+                {["utp", "uhs", "rpl"].map((factor) => (
                   <div key={factor} className="space-y-2">
                     <div className="flex items-center">
                       <Label className="mr-2">{eafDescriptions[factor as keyof typeof eafDescriptions]}</Label>
