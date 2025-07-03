@@ -70,13 +70,13 @@ export default function HomePage() {
                 <p>• Ideal para proyectos modernos y ágiles</p>
               </div>
               <div className="flex gap-2">
-                <Link href="/" className="flex-1">
+                <Link href="/cocomo-ii" className="flex-1">
                   <Button className="w-full">
                     Usar COCOMO II
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
-                <Link href="/">
+                <Link href="/cocomo-ii/docs">
                   <Button variant="outline" size="icon">
                     <BookOpen className="h-4 w-4" />
                   </Button>
