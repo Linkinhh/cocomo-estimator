@@ -12,6 +12,37 @@ import { Button } from "@/components/ui/button"
 import { InfoIcon as InfoCircle, ArrowLeft, BookOpen } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import Link from "next/link"
+import { useEffect } from "react"
+
+type TipoFuncion = "entradas" | "salidas" | "consultas" | "archivos" | "interfaces"
+type NivelComplejidad = "baja" | "media" | "alta"
+
+const functionWeights: Record<TipoFuncion, Record<NivelComplejidad, number>> = {
+  entradas: { baja: 3, media: 4, alta: 6 },
+  salidas: { baja: 4, media: 5, alta: 7 },
+  consultas: { baja: 3, media: 4, alta: 6 },
+  archivos: { baja: 7, media: 10, alta: 15 },
+  interfaces: { baja: 5, media: 7, alta: 10 }
+}
+
+const languageFactors: { [key: string]: number } = {
+  "C": 128,
+  "C++": 29,
+  "Cobol": 91,
+  "Ensamblador": 320,
+  "Fortran": 105,
+  "Java": 53,
+  "Python": 42,
+  "JavaScript": 47,
+  "TypeScript": 50,
+  "Ruby": 50,
+  "Kotlin": 43,
+  "Go": 38,
+  "Rust": 39,
+  "Swift": 42,
+  "PHP": 50,
+  "otro": 0
+}
 
 export default function Cocomo81Page() {
   // Estado para los parámetros de entrada
@@ -74,6 +105,36 @@ export default function Cocomo81Page() {
     uhs: 1.0, // Uso de herramientas de software
     rpl: 1.0, // Cronograma requerido de desarrollo
   })
+
+  const [pf, setPf] = useState<number>(0)
+  const [language, setLanguage] = useState<string>("Java")
+  const [customFactor, setCustomFactor] = useState<number>(languageFactors["Java"])
+
+  const [functions, setFunctions] = useState<Record<TipoFuncion, Record<NivelComplejidad, number>>>({
+    entradas: { baja: 0, media: 0, alta: 0 },
+    salidas: { baja: 0, media: 0, alta: 0 },
+    consultas: { baja: 0, media: 0, alta: 0 },
+    archivos: { baja: 0, media: 0, alta: 0 },
+    interfaces: { baja: 0, media: 0, alta: 0 }
+  })
+
+  useEffect(() => {
+    let totalPf = 0
+
+    Object.entries(functions).forEach(([tipoKey, niveles]) => {
+      const tipo = tipoKey as TipoFuncion
+      Object.entries(niveles).forEach(([nivelKey, cantidad]) => {
+        const nivel = nivelKey as NivelComplejidad
+        totalPf += cantidad * functionWeights[tipo][nivel]
+      })
+    })
+
+    setPf(totalPf)
+
+    const ldc = totalPf * customFactor
+    const klocVal = parseFloat((ldc / 1000).toFixed(2))
+    setKloc(klocVal)
+  }, [functions, customFactor])
 
   // Coeficientes según el tipo de proyecto
   const coefficients = {
@@ -283,6 +344,91 @@ export default function Cocomo81Page() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Cálculo de Puntos de Función</CardTitle>
+            <CardDescription>Desglose funcional por tipo y complejidad</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {Object.keys(functionWeights).map((tipoKey) => {
+              const tipo = tipoKey as TipoFuncion
+              return (
+                <div key={tipo}>
+                  <Label className="capitalize">{tipo}</Label>
+                  <div className="grid grid-cols-3 gap-4 mt-1">
+                    {(["baja", "media", "alta"] as NivelComplejidad[]).map((nivel) => (
+                      <div key={nivel}>
+                        <Label className="text-xs capitalize">
+                          {nivel} ({functionWeights[tipo][nivel]} pts)
+                        </Label>
+                        <Input
+                          type="number"
+                          min="0"
+                          value={functions[tipo][nivel]}
+                          onChange={(e) =>
+                            setFunctions((prev) => ({
+                              ...prev,
+                              [tipo]: {
+                                ...prev[tipo],
+                                [nivel]: parseInt(e.target.value) || 0,
+                              },
+                            }))
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
+
+            <div>
+              <Label>Lenguaje de programación</Label>
+              <Select
+                value={language}
+                onValueChange={(selected) => {
+                  setLanguage(selected)
+                  if (selected !== "otro") {
+                    setCustomFactor(languageFactors[selected])
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar lenguaje" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.keys(languageFactors).map((lang) => (
+                    <SelectItem key={lang} value={lang}>
+                      {lang}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label>LDC por PF</Label>
+              <Input
+                type="number"
+                value={customFactor}
+                onChange={(e) => {
+                  const value = Number(e.target.value)
+                  setCustomFactor(value)
+                  setLanguage("otro")
+                }}
+                placeholder="Ej. 53"
+              />
+              <p className="text-xs text-muted-foreground">
+                Puedes escribir el valor manualmente. Si lo haces, el selector cambia a "otro".
+              </p>
+            </div>
+
+            <div className="pt-2 text-sm">
+              Total Puntos de Función: <strong>{pf}</strong>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Parámetros básicos */}
         <Card>
           <CardHeader>
