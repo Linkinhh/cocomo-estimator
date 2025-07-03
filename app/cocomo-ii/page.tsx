@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { InfoIcon as InfoCircle, ArrowLeft, BookOpen } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import Link from "next/link"
+import { useEffect } from "react"
 
 export default function CocomoIIPage() {
   // Estado para los parámetros de entrada
@@ -70,6 +71,62 @@ export default function CocomoIIPage() {
     sced: 1.0, // Required Development Schedule
   })
 
+  type TipoFuncion = "entradas" | "salidas" | "consultas" | "archivos" | "interfaces"
+  type NivelComplejidad = "baja" | "media" | "alta"
+
+  const functionWeights: Record<TipoFuncion, Record<NivelComplejidad, number>> = {
+    entradas: { baja: 3, media: 4, alta: 6 },
+    salidas: { baja: 4, media: 5, alta: 7 },
+    consultas: { baja: 3, media: 4, alta: 6 },
+    archivos: { baja: 7, media: 10, alta: 15 },
+    interfaces: { baja: 5, media: 7, alta: 10 }
+  }
+
+  const languageFactors: { [key: string]: number } = {
+    "C": 128,
+    "C++": 29,
+    "Java": 53,
+    "Python": 42,
+    "JavaScript": 47,
+    "TypeScript": 50,
+    "Ruby": 50,
+    "Kotlin": 43,
+    "Go": 38,
+    "Rust": 39,
+    "Swift": 42,
+    "PHP": 50,
+    "otro": 0
+  }
+
+  const [pf, setPf] = useState<number>(0)
+  const [language, setLanguage] = useState<string>("Java")
+  const [customFactor, setCustomFactor] = useState<number>(languageFactors["Java"])
+  const [functions, setFunctions] = useState<Record<TipoFuncion, Record<NivelComplejidad, number>>>({
+    entradas: { baja: 0, media: 0, alta: 0 },
+    salidas: { baja: 0, media: 0, alta: 0 },
+    consultas: { baja: 0, media: 0, alta: 0 },
+    archivos: { baja: 0, media: 0, alta: 0 },
+    interfaces: { baja: 0, media: 0, alta: 0 }
+  })
+
+  useEffect(() => {
+    let totalPf = 0
+
+    Object.entries(functions).forEach(([tipoKey, niveles]) => {
+      const tipo = tipoKey as TipoFuncion
+      Object.entries(niveles).forEach(([nivelKey, cantidad]) => {
+        const nivel = nivelKey as NivelComplejidad
+        totalPf += cantidad * functionWeights[tipo][nivel]
+      })
+    })
+
+    setPf(totalPf)
+
+    const ldc = totalPf * customFactor
+    const klocVal = parseFloat((ldc / 1000).toFixed(2))
+    setSize(klocVal) // Actualiza KLOC en Parámetros Básicos
+  }, [functions, customFactor])
+
   // Calcular el exponente de escala
   const calculateScaleExponent = () => {
     const sumSF = Object.values(scaleFactors).reduce((acc, val) => acc + val, 0)
@@ -99,9 +156,8 @@ export default function CocomoIIPage() {
   // Calcular el tiempo de desarrollo (meses)
   const calculateDevelopmentTime = () => {
     const effort = calculateEffort()
-    const scaleExp = calculateScaleExponent()
-    const sced = efMultipliers.sced
-    return 3.67 * Math.pow(effort, 0.28 + 0.2 * (scaleExp - 0.91)) * sced
+    const scaleExp = calculateScaleExponent()    
+    return 3.67 * Math.pow(effort, 0.28 + 0.2 * (scaleExp - 0.91))
   }
 
   // Calcular el número de personas requeridas
@@ -171,23 +227,23 @@ export default function CocomoIIPage() {
 
   // Descripciones de los multiplicadores de esfuerzo
   const efDescriptions = {
-    rely: "Required Software Reliability - Fiabilidad requerida",
-    data: "Database Size - Tamaño de la base de datos",
-    cplx: "Product Complexity - Complejidad del producto",
-    ruse: "Required Reusability - Reutilización requerida",
-    docu: "Documentation Match - Documentación requerida",
-    time: "Execution Time Constraint - Restricciones de tiempo",
-    stor: "Main Storage Constraint - Restricciones de memoria",
-    pvol: "Platform Volatility - Volatilidad de la plataforma",
-    acap: "Analyst Capability - Capacidad del analista",
-    pcap: "Programmer Capability - Capacidad del programador",
-    pcon: "Personnel Continuity - Continuidad del personal",
-    apex: "Applications Experience - Experiencia en aplicaciones",
-    plex: "Platform Experience - Experiencia en la plataforma",
-    ltex: "Language and Tool Experience - Experiencia en herramientas",
-    tool: "Use of Software Tools - Uso de herramientas",
-    site: "Multisite Development - Desarrollo multisitio",
-    sced: "Required Development Schedule - Cronograma requerido",
+    rely: "RSS - Fiabilidad Requerida del Software",
+    data: "TBD - Tamaño de la base de datos",
+    cplx: "CPR- Complejidad del producto",
+    ruse: "RUSE - Nivel de Reutilización requerida",
+    docu: "DOC - Documentación requerida",
+    time: "RTE - Restricciones de tiempo de ejecución",
+    stor: "RMP - Restricciones de memoria principal",
+    pvol: "VMC - Volatilidad de la plataforma",
+    acap: "CAN - Capacidad del analista",
+    pcap: "CPRO - Capacidad del programador",
+    pcon: "CPER - Continuidad del personal (% de rotación anual)",
+    apex: "EAPL - Experiencia en aplicaciones similares",
+    plex: "EPLA - Experiencia en la plataforma de desarrollo",
+    ltex: "ELP - Experiencia con el lenguaje y herramientas",
+    tool: "UHS - Uso de herramientas de software",
+    site: "RPL - Desarrollo multisitio",
+    sced: "DMS - Cronograma requerido para desarrollo",
   }
 
   // Opciones para factores de escala
@@ -339,19 +395,19 @@ export default function CocomoIIPage() {
       { label: "Muy alto", value: 0.78 },
     ],
     site: [
-      { label: "Muy bajo", value: 1.22 },
-      { label: "Bajo", value: 1.09 },
-      { label: "Nominal", value: 1.0 },
-      { label: "Alto", value: 0.93 },
-      { label: "Muy alto", value: 0.86 },
-      { label: "Extra alto", value: 0.8 },
-    ],
-    sced: [
       { label: "Muy bajo", value: 1.43 },
       { label: "Bajo", value: 1.14 },
       { label: "Nominal", value: 1.0 },
       { label: "Alto", value: 1.0 },
       { label: "Muy alto", value: 1.0 },
+    ],
+    sced: [
+      { label: "Muy bajo", value: 1.22 },
+      { label: "Bajo", value: 1.09 },
+      { label: "Nominal", value: 1.0 },
+      { label: "Alto", value: 0.93 },
+      { label: "Muy alto", value: 0.86 },      
+      { label: "Extra alto", value: 0.80 },
     ],
   }
 
@@ -382,6 +438,91 @@ export default function CocomoIIPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Cálculo de Puntos de Función</CardTitle>
+            <CardDescription>Ingrese las funciones agrupadas por tipo y complejidad</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {Object.keys(functionWeights).map((tipoKey) => {
+              const tipo = tipoKey as TipoFuncion
+              return (
+                <div key={tipo}>
+                  <Label className="capitalize">{tipo}</Label>
+                  <div className="grid grid-cols-3 gap-4 mt-1">
+                    {(["baja", "media", "alta"] as NivelComplejidad[]).map((nivel) => (
+                      <div key={nivel}>
+                        <Label className="text-xs capitalize">
+                          {nivel} ({functionWeights[tipo][nivel]} pts)
+                        </Label>
+                        <Input
+                          type="number"
+                          min="0"
+                          value={functions[tipo][nivel]}
+                          onChange={(e) =>
+                            setFunctions((prev) => ({
+                              ...prev,
+                              [tipo]: {
+                                ...prev[tipo],
+                                [nivel]: parseInt(e.target.value) || 0
+                              }
+                            }))
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
+
+            <div>
+              <Label>Lenguaje de programación</Label>
+              <Select
+                value={language}
+                onValueChange={(selected) => {
+                  setLanguage(selected)
+                  if (selected !== "otro") {
+                    setCustomFactor(languageFactors[selected])
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar lenguaje" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.keys(languageFactors).map((lang) => (
+                    <SelectItem key={lang} value={lang}>
+                      {lang}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label>LDC por PF</Label>
+              <Input
+                type="number"
+                value={customFactor}
+                onChange={(e) => {
+                  const value = Number(e.target.value)
+                  setCustomFactor(value)
+                  setLanguage("otro")
+                }}
+                placeholder="Ej. 53"
+              />
+              <p className="text-xs text-muted-foreground">
+                Puedes escribir el valor manualmente. Si lo haces, el selector cambia a "otro".
+              </p>
+            </div>
+
+            <div className="pt-2 text-sm">
+              Total Puntos de Función calculados: <strong>{pf}</strong>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Parámetros básicos */}
         <Card>
           <CardHeader>
@@ -390,22 +531,9 @@ export default function CocomoIIPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label>Tipo de Medida de Tamaño</Label>
-              <Select value={sizeType} onValueChange={setSizeType}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccione tipo de medida" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="kloc">KLOC (Miles de líneas de código)</SelectItem>
-                  <SelectItem value="fp">Puntos de Función</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
               <div className="flex items-center">
                 <Label htmlFor="size" className="mr-2">
-                  Tamaño del Proyecto ({sizeType === "kloc" ? "KLOC" : "Puntos de Función"})
+                  Tamaño del Proyecto (KLOC)
                 </Label>
                 <TooltipProvider>
                   <Tooltip>
@@ -414,9 +542,7 @@ export default function CocomoIIPage() {
                     </TooltipTrigger>
                     <TooltipContent>
                       <p className="max-w-xs">
-                        {sizeType === "kloc"
-                          ? "Miles de líneas de código estimadas"
-                          : "Puntos de función estimados para el proyecto"}
+                        Miles de líneas de código estimadas para el proyecto
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -596,14 +722,14 @@ export default function CocomoIIPage() {
                     <p className="ml-4">donde B = 0.91</p>
                     
                     <p className="mt-3"><strong>Esfuerzo (personas-mes):</strong></p>
-                    <p className="ml-4">Esfuerzo = A × Tamaño^E × ∏EM</p>
+                    <p className="ml-4">Esfuerzo = A × Tamaño^E × FEC</p>
                     <p className="ml-4">donde A = 2.94</p>
                     
                     <p className="mt-3"><strong>Exponente de tiempo:</strong></p>
                     <p className="ml-4">F = 0.28 + 0.2 × (E - B)</p>
                     
                     <p className="mt-3"><strong>Tiempo de desarrollo (meses):</strong></p>
-                    <p className="ml-4">T = C × Esfuerzo^F × SCED%</p>
+                    <p className="ml-4">T = C × Esfuerzo^F</p>
                     <p className="ml-4">donde C = 3.67</p>
                     
                     <p className="mt-3"><strong>Personal promedio:</strong></p>
@@ -612,8 +738,8 @@ export default function CocomoIIPage() {
                     <p className="mt-3"><strong>Suma de factores de escala:</strong></p>
                     <p className="ml-4">∑SF = PREC + FLEX + RESL + TEAM + PMAT</p>
                     
-                    <p className="mt-3"><strong>Producto de multiplicadores:</strong></p>
-                    <p className="ml-4">∏EM = ∏(todos los multiplicadores de esfuerzo)</p>
+                    <p className="mt-3"><strong>Producto de conductores de coste:</strong></p>
+                    <p className="ml-4">FEC = ∏(conductores de coste)</p>
                     
                     <p className="mt-3"><strong>Conversión Puntos de Función a KLOC:</strong></p>
                     <p className="ml-4">KLOC = (Puntos de Función × 53) / 1000</p>
@@ -691,7 +817,7 @@ export default function CocomoIIPage() {
                     </div>
 
                     <div>
-                      <p className="font-semibold">4. Multiplicadores de esfuerzo:</p>
+                      <p className="font-semibold">4. Conductores de Coste:</p>
                       <div className="ml-4 space-y-1">
                         <p>∏EM = {Object.entries(efMultipliers).map(([key, value]) => value.toFixed(2)).join(" × ")}</p>
                         <p>∏EM = {calculateEAF().toFixed(4)}</p>
@@ -719,8 +845,8 @@ export default function CocomoIIPage() {
                     <div>
                       <p className="font-semibold">7. Cálculo del tiempo:</p>
                       <div className="ml-4 space-y-1">
-                        <p>T = 3.67 × ({effort.toFixed(2)})^{(0.28 + 0.2 * (scaleExp - 0.91)).toFixed(3)} × {efMultipliers.sced}</p>
-                        <p>T = 3.67 × {Math.pow(effort, 0.28 + 0.2 * (scaleExp - 0.91)).toFixed(2)} × {efMultipliers.sced}</p>
+                        <p>T = 3.67 × ({effort.toFixed(2)})^{(0.28 + 0.2 * (scaleExp - 0.91)).toFixed(3)}</p>
+                        <p>T = 3.67 × {Math.pow(effort, 0.28 + 0.2 * (scaleExp - 0.91)).toFixed(2)}</p>
                         <p>T = {time.toFixed(2)} meses</p>
                       </div>
                     </div>
@@ -795,7 +921,7 @@ export default function CocomoIIPage() {
       {/* Multiplicadores de esfuerzo */}
       <Card className="mt-8">
         <CardHeader>
-          <CardTitle>Multiplicadores de Esfuerzo</CardTitle>
+          <CardTitle>Conductores de Coste</CardTitle>
           <CardDescription>Ajuste los multiplicadores según las características de su proyecto</CardDescription>
         </CardHeader>
         <CardContent>
@@ -960,6 +1086,7 @@ export default function CocomoIIPage() {
           <div className="text-sm text-muted-foreground">EAF Total: {calculateEAF().toFixed(2)}</div>
         </CardFooter>
       </Card>
+    </div>
     </div>
   )
 }

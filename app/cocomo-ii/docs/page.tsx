@@ -37,11 +37,11 @@ export default function CocomoIIDocsPage() {
             </p>
             <div className="bg-green-50 p-4 rounded-lg">
               <h4 className="font-semibold mb-2">Ecuación Principal:</h4>
-              <p className="font-mono text-sm">Esfuerzo = A × Tamaño^E × ∏EM</p>
+              <p className="font-mono text-sm">Esfuerzo = A × Tamaño^E × FEC</p>
               <p className="font-mono text-sm">E = B + 0.01 × ∑SF</p>
-              <p className="font-mono text-sm">Tiempo = C × Esfuerzo^F × SCED%</p>
+              <p className="font-mono text-sm">Tiempo = C × Esfuerzo^F</p>
               <p className="text-sm text-gray-600 mt-2">
-                Donde A=2.94, B=0.91, C=3.67, F=0.28+0.2×(E-B), ∏EM es el producto de multiplicadores de esfuerzo, y ∑SF
+                Donde A=2.94, B=0.91, C=3.67, F=0.28+0.2×(E-B), FEC es el producto de los conductores de coste, y ∑SF
                 es la suma de factores de escala
               </p>
             </div>
