@@ -175,7 +175,8 @@ export default function Step1BasicParameters() {
                 </p>
               </div>
 
-              <div className="space-y-2">
+              {state.sizingMethod === 'functionPoints' && (
+                <div className="space-y-2">
                 <Label htmlFor="language">Lenguaje de Programación</Label>
                 <Select
                   value={state.language}
@@ -211,6 +212,7 @@ export default function Step1BasicParameters() {
                   </div>
                 )}
               </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="costPerPerson">Costo por Persona ($/mes)</Label>

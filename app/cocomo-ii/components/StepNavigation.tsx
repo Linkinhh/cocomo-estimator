@@ -1,15 +1,16 @@
 "use client"
 
-import { useCocomo } from '../context'
+import { useCocomoII } from '../context'
 
 export default function StepNavigation() {
-  const { state, goToStep } = useCocomo()
+  const { state, goToStep } = useCocomoII()
 
   const steps = [
-    { number: 1, title: "Parámetros Básicos", description: "KLOC, tipo de proyecto, lenguaje" },
-    { number: 2, title: "Factores EAF", description: "Multiplicadores de esfuerzo" },
-    { number: 3, title: "Costos por Fase", description: "Distribución personalizada (opcional)" },
-    { number: 4, title: "Resultados", description: "Estimación final y resumen" }
+    { number: 1, title: "Parámetros Básicos", description: "Tamaño del proyecto y método de estimación" },
+    { number: 2, title: "Factores de Escala", description: "Factores que afectan la escala del proyecto" },
+    { number: 3, title: "Factores EAF", description: "Multiplicadores de esfuerzo" },
+    { number: 4, title: "Costos por Etapas", description: "Distribución de costos por fase" },
+    { number: 5, title: "Resultados", description: "Estimaciones finales y análisis" }
   ]
 
   return (
