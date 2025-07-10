@@ -30,7 +30,7 @@ export default function HomePage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="text-sm text-gray-600 space-y-2">
-                <p>• Basado en líneas de código (KLOC)</p>
+                <p>• Basado en puntos de función o KLOC</p>
                 <p>• 15 multiplicadores de esfuerzo</p>
                 <p>• 3 tipos de proyecto: Orgánico, Semi-acoplado, Empotrado</p>
                 <p>• Ideal para proyectos tradicionales</p>

@@ -44,12 +44,12 @@ function CocomoWizard() {
           <div className="flex items-center">
             <Calculator className="mr-3 h-8 w-8 text-blue-600" />
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Estimador COCOMO 81</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Estimador COCOMO II Post-Arquitectura</h1>
               <p className="text-gray-600">Modelo de estimación de costos de software</p>
             </div>
           </div>
           <Link
-            href="/cocomo-81/docs"
+            href="/cocomo-ii-refactor/docs"
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <FileText className="mr-2 h-4 w-4" />
