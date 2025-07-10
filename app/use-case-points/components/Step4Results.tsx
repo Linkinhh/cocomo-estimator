@@ -38,25 +38,44 @@ export default function Step4Results() {
   const pcua = pcusa * tcf * ef;
 
   // Step 7: Effort Calculation
-  const lowExperienceCount = Object.keys(state.environmentalFactors)
-    .filter(key => key.startsWith('f') && parseInt(key.substring(1)) <= 6)
+  // X: Count F1-F6 factors that are < 3
+  const xCount = Object.keys(state.environmentalFactors)
+    .filter(key => {
+      const factorNum = parseInt(key.substring(1));
+      return key.startsWith('f') && factorNum >= 1 && factorNum <= 6;
+    })
     .filter(key => state.environmentalFactors[key] < 3)
     .length;
 
-  let productivityFactor: number;
-  let riskMessage: string | null = null;
+  // Y: Count F7-F8 factors that are > 3
+  const yCount = Object.keys(state.environmentalFactors)
+    .filter(key => {
+      const factorNum = parseInt(key.substring(1));
+      return key.startsWith('f') && factorNum >= 7 && factorNum <= 8;
+    })
+    .filter(key => state.environmentalFactors[key] > 3)
+    .length;
 
-  if (lowExperienceCount <= 2) {
+  const totalRiskFactors = xCount + yCount;
+
+  let productivityFactor: number | null = null;
+  let riskMessage: string | null = null;
+  let effort: number | null = null;
+  let totalCost: number | null = null;
+
+  if (totalRiskFactors <= 2) {
     productivityFactor = 20;
-  } else if (lowExperienceCount <= 4) {
+  } else if (totalRiskFactors === 3 || totalRiskFactors === 4) {
     productivityFactor = 28;
   } else {
-    productivityFactor = 36;
-    riskMessage = 'El proyecto es arriesgado debido a la falta de experiencia y la inestabilidad de los requisitos. Se recomienda proceder con precaución.';
+    // X + Y >= 5: No calcular esfuerzo, solo mostrar advertencia
+    riskMessage = 'El proyecto presenta alto riesgo de fracaso. Se recomienda hacer cambios para reducir los factores de riesgo antes de proceder. No se puede calcular el esfuerzo hasta reducir los factores de riesgo.';
   }
 
-  const effort = pcua * productivityFactor;
-  const totalCost = (effort / 160) * state.personnelCost; // Assuming 160 hours/month
+  if (productivityFactor !== null) {
+    effort = pcua * productivityFactor;
+    totalCost = (effort / 160) * state.personnelCost; // Assuming 160 hours/month
+  }
 
   const handleReset = () => {
     // This will reset the state by navigating to step 1 and reloading the page
@@ -73,9 +92,18 @@ export default function Step4Results() {
             <CardTitle>Estimación de Esfuerzo</CardTitle>
           </CardHeader>
           <CardContent className="text-center">
-            <p className="text-5xl font-bold text-green-600">{effort.toFixed(2)}</p>
-            <p className="text-gray-600">Horas-Persona</p>
-            <p className="text-xs text-gray-500 mt-2">PCUA ({pcua.toFixed(2)}) * Factor Productividad ({productivityFactor})</p>
+            {effort !== null ? (
+              <>
+                <p className="text-5xl font-bold text-green-600">{effort.toFixed(2)}</p>
+                <p className="text-gray-600">Horas-Persona</p>
+                <p className="text-xs text-gray-500 mt-2">PCUA ({pcua.toFixed(2)}) * Factor Productividad ({productivityFactor})</p>
+              </>
+            ) : (
+              <>
+                <p className="text-3xl font-bold text-red-600">No Calculable</p>
+                <p className="text-red-600">Reducir factores de riesgo</p>
+              </>
+            )}
           </CardContent>
         </Card>
         <Card className="bg-indigo-50 border-indigo-200">
@@ -83,17 +111,29 @@ export default function Step4Results() {
             <CardTitle>Estimación de Costo</CardTitle>
           </CardHeader>
           <CardContent className="text-center">
-            <p className="text-5xl font-bold text-indigo-600">${totalCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-            <p className="text-gray-600">Costo Total del Proyecto</p>
+            {totalCost !== null ? (
+              <>
+                <p className="text-5xl font-bold text-indigo-600">${totalCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                <p className="text-gray-600">Costo Total del Proyecto</p>
+              </>
+            ) : (
+              <>
+                <p className="text-3xl font-bold text-red-600">No Calculable</p>
+                <p className="text-red-600">Reducir factores de riesgo</p>
+              </>
+            )}
             <div className="flex items-center justify-center gap-2 mt-2">
               <Label htmlFor="personnelCost" className="text-xs text-gray-500">Costo/Mes:</Label>
-              <Input
-                id="personnelCost"
-                type="number"
-                className="w-28 h-8 text-center"
-                value={state.personnelCost}
-                onChange={(e) => updateState({ personnelCost: parseInt(e.target.value, 10) || 0 })}
-              />
+              {totalCost !== null && (
+                <Input
+                  id="personnelCost"
+                  type="number"
+                  min="1000"
+                  value={state.personnelCost}
+                  onChange={(e) => updateState({ personnelCost: Number.parseInt(e.target.value) || 5000 })}
+                  className="w-24 h-6 text-xs"
+                />
+              )}
             </div>
           </CardContent>
         </Card>
