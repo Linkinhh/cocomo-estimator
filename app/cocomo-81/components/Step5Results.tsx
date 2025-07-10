@@ -122,7 +122,7 @@ export default function Step5Results() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Paso 5: Resultados de la Estimación COCOMO 81</CardTitle>
+          <CardTitle>Resultados de la Estimación COCOMO 81</CardTitle>
           <CardDescription>
             Resumen completo de la estimación del proyecto
           </CardDescription>

@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Calculator, BookOpen, ArrowRight } from "lucide-react"
+import { Calculator, BookOpen, ArrowRight, FileText } from "lucide-react"
 import Link from "next/link"
 
 export default function HomePage() {
@@ -16,7 +16,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-3 gap-8">
           {/* COCOMO-81 Intermedio */}
           <Card className="hover:shadow-lg transition-shadow">
             <CardHeader className="text-center">
@@ -43,6 +43,40 @@ export default function HomePage() {
                   </Button>
                 </Link>
                 <Link href="/cocomo-81/docs">
+                  <Button variant="outline" size="icon">
+                    <BookOpen className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Puntos de Caso de Uso */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-4 p-3 bg-purple-100 rounded-full w-fit">
+                <Calculator className="h-8 w-8 text-purple-600" />
+              </div>
+              <CardTitle className="text-2xl">Puntos de Caso de Uso</CardTitle>
+              <CardDescription className="text-base">
+                Modelo de estimación basado en actores y casos de uso del sistema
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-sm text-gray-600 space-y-2">
+                <p>• Basado en actores y casos de uso</p>
+                <p>• 13 factores de complejidad técnica</p>
+                <p>• 8 factores de complejidad ambiental</p>
+                <p>• Ideal para realizar estimaciones tempranas</p>
+              </div>
+              <div className="flex gap-2">
+                <Link href="/use-case-points" className="flex-1">
+                  <Button className="w-full">
+                    Usar UCP
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link href="/use-case-points/docs">
                   <Button variant="outline" size="icon">
                     <BookOpen className="h-4 w-4" />
                   </Button>
@@ -90,7 +124,7 @@ export default function HomePage() {
           <Card className="bg-white/50 backdrop-blur">
             <CardContent className="pt-6">
               <h3 className="text-lg font-semibold mb-2">¿Qué modelo elegir?</h3>
-              <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
+              <div className="grid md:grid-cols-3 gap-4 text-sm text-gray-600">
                 <div>
                   <strong>COCOMO-81:</strong> Mejor para proyectos tradicionales con metodologías en cascada y cuando se
                   tiene experiencia histórica con líneas de código.
@@ -98,6 +132,9 @@ export default function HomePage() {
                 <div>
                   <strong>COCOMO II:</strong> Mejor para proyectos modernos, metodologías ágiles, reutilización de
                   código y cuando se trabaja con puntos de función.
+                </div>
+                <div>
+                  <strong>Puntos de Caso de Uso:</strong> Ideal para estimaciones en fases tempranas del desarrollo, cuando los requisitos se definen a través de casos de uso.
                 </div>
               </div>
             </CardContent>

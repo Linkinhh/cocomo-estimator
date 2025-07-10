@@ -143,18 +143,6 @@ export default function Step4PhaseCosts() {
                   </p>
                 </div>
               </div>
-
-              <div className="p-4 bg-amber-50 rounded-lg">
-                <h4 className="font-medium text-amber-800 mb-2">Distribución Típica de Esfuerzo por Etapa:</h4>
-                <ul className="text-sm text-amber-700 space-y-1">
-                  <li>• Requerimientos: 10-15%</li>
-                  <li>• Diseño del Producto: 20-25%</li>
-                  <li>• Diseño Detallado: 15-20%</li>
-                  <li>• Codificación y Pruebas Unitarias: 25-35%</li>
-                  <li>• Integración y Testeo: 15-20%</li>
-                  <li>• Mantenimiento: 5-10%</li>
-                </ul>
-              </div>
             </>
           )}
         </CardContent>

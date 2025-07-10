@@ -149,7 +149,7 @@ export default function Step3EAFFactors() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Paso 3: Factores de Ajuste de Esfuerzo (EAF)</CardTitle>
+          <CardTitle>Factores de Ajuste de Esfuerzo (EAF)</CardTitle>
           <CardDescription>
             Configure los multiplicadores que afectan el esfuerzo del proyecto
           </CardDescription>

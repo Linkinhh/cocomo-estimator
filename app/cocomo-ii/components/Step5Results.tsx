@@ -3,13 +3,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Download, RefreshCw } from "lucide-react"
 import { useCocomoII } from '../context'
 import { phases } from '../types'
 
 export default function Step5Results() {
-  const { state, updateState, prevStep } = useCocomoII()
+  const { state, prevStep, goToStep } = useCocomoII()
 
   // COCOMO II calculations
   const calculateScaleExponent = () => {
@@ -67,255 +65,180 @@ export default function Step5Results() {
     return Object.values(state.phaseCosts).reduce((sum, phase) => sum + phase.effort, 0)
   }
 
-  const resetToDefaults = () => {
-    updateState({
-      size: 10,
-      sizeType: "kloc",
-      costPerPerson: 5000,
-      scaleFactors: {
-        prec: 3.72,
-        flex: 3.04,
-        resl: 4.24,
-        team: 3.29,
-        pmat: 4.68,
-      },
-      efMultipliers: {
-        rely: 1.0, data: 1.0, cplx: 1.0, ruse: 1.0, docu: 1.0,
-        time: 1.0, stor: 1.0, pvol: 1.0, acap: 1.0, pcap: 1.0,
-        pcon: 1.0, apex: 1.0, plex: 1.0, ltex: 1.0, tool: 1.0,
-        site: 1.0, sced: 1.0,
-      },
-      usePhaseCosts: false,
-      currentStep: 1
+  // Calculate costs by phase 
+  const calculatePhaseCosts = () => {
+    const effort = calculateEffort()
+    return phases.map((phase) => {
+      const phaseKey = phase.key as keyof typeof state.phaseCosts
+      const phaseData = state.phaseCosts[phaseKey]
+      const phaseEffort = (effort * phaseData.effort) / 100
+      const phaseCost = state.usePhaseCosts ? phaseEffort * phaseData.cost : phaseEffort * state.costPerPerson
+
+      return {
+        name: phase.name,
+        effort: Math.round(phaseEffort * 100) / 100,
+        cost: Math.round(phaseCost),
+        percentage: phaseData.effort
+      }
     })
   }
 
-  const exportResults = () => {
-    const results = {
-      parameters: {
-        size: state.size,
-        sizeType: state.sizeType,
-        costPerPerson: state.costPerPerson,
-      },
-      scaleFactors: state.scaleFactors,
-      efMultipliers: state.efMultipliers,
-      calculations: {
-        scaleExponent: calculateScaleExponent(),
-        eaf: calculateEAF(),
-        effort: calculateEffort(),
-        developmentTime: calculateDevelopmentTime(),
-        personnel: calculatePersonnel(),
-        totalCost: calculateTotalCost(),
-      },
-      phaseCosts: state.usePhaseCosts ? state.phaseCosts : null,
-    }
-
-    const dataStr = JSON.stringify(results, null, 2)
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr)
-    
-    const exportFileDefaultName = `cocomo-ii-estimation-${new Date().toISOString().split('T')[0]}.json`
-    
-    const linkElement = document.createElement('a')
-    linkElement.setAttribute('href', dataUri)
-    linkElement.setAttribute('download', exportFileDefaultName)
-    linkElement.click()
+  const results = {
+    kloc: getSizeInKLOC(),
+    scaleExponent: calculateScaleExponent(),
+    eaf: calculateEAF(),
+    effort: calculateEffort(),
+    time: calculateDevelopmentTime(),
+    personnel: calculatePersonnel(),
+    totalCost: calculateTotalCost(),
+    phaseCosts: calculatePhaseCosts()
   }
-
-  const effort = calculateEffort()
-  const developmentTime = calculateDevelopmentTime()
-  const personnel = calculatePersonnel()
-  const totalCost = calculateTotalCost()
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Resultados de la Estimación COCOMO II</CardTitle>
+          <CardTitle>Estimación COCOMO II - Resultados Finales</CardTitle>
           <CardDescription>
-            Estimaciones calculadas basadas en los parámetros configurados
+            Resultados completos basados en los parámetros y factores configurados
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <h3 className="text-lg font-semibold text-blue-800">Esfuerzo</h3>
-              <p className="text-2xl font-bold text-blue-600">{effort.toFixed(1)}</p>
-              <p className="text-sm text-blue-600">personas-mes</p>
+              <p className="text-2xl font-bold text-blue-600">
+                {results.effort.toFixed(1)}
+              </p>
+              <p className="text-sm text-gray-600 mt-1">Personas-Mes</p>
             </div>
             <div className="text-center p-4 bg-green-50 rounded-lg">
-              <h3 className="text-lg font-semibold text-green-800">Tiempo</h3>
-              <p className="text-2xl font-bold text-green-600">{developmentTime.toFixed(1)}</p>
-              <p className="text-sm text-green-600">meses</p>
+              <p className="text-2xl font-bold text-green-600">
+                {results.time.toFixed(1)}
+              </p>
+              <p className="text-sm text-gray-600 mt-1">Meses</p>
             </div>
             <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <h3 className="text-lg font-semibold text-purple-800">Personal</h3>
-              <p className="text-2xl font-bold text-purple-600">{personnel.toFixed(1)}</p>
-              <p className="text-sm text-purple-600">personas</p>
+              <p className="text-2xl font-bold text-purple-600">
+                {results.personnel.toFixed(1)}
+              </p>
+              <p className="text-sm text-gray-600 mt-1">Personas</p>
             </div>
             <div className="text-center p-4 bg-orange-50 rounded-lg">
-              <h3 className="text-lg font-semibold text-orange-800">Costo Total</h3>
-              <p className="text-xl font-bold text-orange-600">
-                ${totalCost.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              <p className="text-2xl font-bold text-orange-600">
+                ${results.totalCost.toLocaleString()}
               </p>
-              <p className="text-sm text-orange-600">USD</p>
+              <p className="text-sm text-gray-600 mt-1">Costo Total</p>
             </div>
           </div>
+
+          {/* Main Results Layout - Matching COCOMO-81 structure */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Distribución por Fases */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Distribución por Fases</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Fase</TableHead>
+                        <TableHead className="text-center">Esfuerzo (%)</TableHead>
+                        <TableHead className="text-center">Esfuerzo (PM)</TableHead>
+                        <TableHead className="text-center">Costo ($)</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {results.phaseCosts.map((phase, index) => (
+                        <TableRow key={index}>
+                          <TableCell className="font-medium">{phase.name}</TableCell>
+                          <TableCell className="text-center">{phase.percentage}%</TableCell>
+                          <TableCell className="text-center">{phase.effort}</TableCell>
+                          <TableCell className="text-center">${phase.cost.toLocaleString()}</TableCell>
+                        </TableRow>
+                      ))}
+                      <TableRow className="font-medium bg-gray-50">
+                        <TableCell>Total</TableCell>
+                        <TableCell className="text-center">100%</TableCell>
+                        <TableCell className="text-center">{results.effort.toFixed(1)}</TableCell>
+                        <TableCell className="text-center">${results.totalCost.toLocaleString()}</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+            <div className="flex flex-col justify-between w-full">
+              {/* Factores de Escala */}
+              <Card className="w-full">
+                <CardHeader>
+                  <CardTitle className="text-lg">Factores de Escala</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    {Object.entries(state.scaleFactors).map(([key, value]) => (
+                      <div key={key} className="flex justify-between p-2 bg-gray-50 rounded">
+                        <span className="font-medium uppercase">{key}:</span>
+                        <span>{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                    <p className="font-medium">Exponente de Escala: {results.scaleExponent.toFixed(3)}</p>
+                  </div>
+                </CardContent>
+              </Card>
+              {/* Factores EAF */}
+              <Card className="w-full">
+                <CardHeader>
+                  <CardTitle className="text-lg">Factores de Ajuste de Esfuerzo (EAF)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 text-sm">
+                    {Object.entries(state.efMultipliers).map(([key, value]) => (
+                      <div key={key} className="flex justify-between p-2 bg-gray-50 rounded">
+                        <span className="font-medium uppercase">{key}:</span>
+                        <span>{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                    <p className="font-medium">EAF Total: {results.eaf.toFixed(3)}</p>
+                  </div>
+                </CardContent>
+              </Card>
+              {/* Fórmulas Utilizadas */}
+              <Card className="w-full">
+                <CardHeader>
+                  <CardTitle className="text-lg">Fórmulas Utilizadas</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <p><strong>Esfuerzo:</strong> E = 2.94 × KLOC^E × EAF</p>
+                  <p><strong>Tiempo:</strong> T = 3.67 × E^(0.28 + 0.2 × (E-1.01))</p>
+                  <p><strong>Personal:</strong> P = E / T</p>
+                  <p><strong>Costo:</strong> C = E × Costo_por_Persona</p>
+                  <p><strong>Exponente:</strong> E = 1.01 + 0.01 × ΣSF</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="summary" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="summary">Resumen</TabsTrigger>
-          <TabsTrigger value="factors">Factores</TabsTrigger>
-          <TabsTrigger value="phases">Etapas</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="summary" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Parámetros de Entrada</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">Tamaño del Proyecto</TableCell>
-                    <TableCell>{state.size} {state.sizeType === 'kloc' ? 'KLOC' : 'KLOC (desde PF)'}</TableCell>
-                  </TableRow>
-                  {state.sizeType === 'pf' && (
-                    <TableRow>
-                      <TableCell className="font-medium">Puntos de Función</TableCell>
-                      <TableCell>{state.pf} PF</TableCell>
-                    </TableRow>
-                  )}
-                  <TableRow>
-                    <TableCell className="font-medium">Costo por Persona-Mes</TableCell>
-                    <TableCell>${state.costPerPerson.toLocaleString()}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Exponente de Escala (E)</TableCell>
-                    <TableCell>{calculateScaleExponent().toFixed(3)}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Factor de Ajuste de Esfuerzo (EAF)</TableCell>
-                    <TableCell>{calculateEAF().toFixed(3)}</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="factors" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Factores de Escala</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableBody>
-                    {Object.entries(state.scaleFactors).map(([key, value]) => (
-                      <TableRow key={key}>
-                        <TableCell className="font-medium">{key.toUpperCase()}</TableCell>
-                        <TableCell>{value}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Multiplicadores de Esfuerzo</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableBody>
-                    {Object.entries(state.efMultipliers).map(([key, value]) => (
-                      <TableRow key={key}>
-                        <TableCell className="font-medium">{key.toUpperCase()}</TableCell>
-                        <TableCell className={value > 1.0 ? 'text-red-600' : value < 1.0 ? 'text-green-600' : ''}>
-                          {value}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="phases" className="space-y-4">
-          {state.usePhaseCosts ? (
-            <Card>
-              <CardHeader>
-                <CardTitle>Distribución de Costos por Etapa</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Etapa</TableHead>
-                      <TableHead>% Esfuerzo</TableHead>
-                      <TableHead>Esfuerzo (PM)</TableHead>
-                      <TableHead>Costo/PM</TableHead>
-                      <TableHead>Costo Total</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {phases.map(phase => {
-                      const phaseData = state.phaseCosts[phase.key as keyof typeof state.phaseCosts]
-                      const totalEffortPercent = getTotalEffort()
-                      const phaseEffort = (phaseData.effort / totalEffortPercent) * effort
-                      const phaseCost = phaseEffort * phaseData.cost
-                      
-                      return (
-                        <TableRow key={phase.key}>
-                          <TableCell className="font-medium">{phase.name}</TableCell>
-                          <TableCell>{phaseData.effort}%</TableCell>
-                          <TableCell>{phaseEffort.toFixed(1)}</TableCell>
-                          <TableCell>${phaseData.cost.toLocaleString()}</TableCell>
-                          <TableCell>${phaseCost.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</TableCell>
-                        </TableRow>
-                      )
-                    })}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardHeader>
-                <CardTitle>Costo Uniforme</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-center text-lg">
-                  Se utiliza un costo uniforme de <strong>${state.costPerPerson.toLocaleString()}</strong> por persona-mes
-                  para todo el proyecto.
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-      </Tabs>
-
-      <div className="flex flex-col sm:flex-row gap-4 justify-between">
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={prevStep}>
-            Anterior
-          </Button>
-          <Button variant="outline" onClick={resetToDefaults} className="flex items-center">
-            <RefreshCw className="w-4 h-4 mr-2" />
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={prevStep}>
+          Anterior
+        </Button>
+        <div className="space-x-2">
+          <Button variant="outline" onClick={() => goToStep(1)}>
             Reiniciar
           </Button>
+          <Button onClick={() => window.print()}>
+            Imprimir Resultados
+          </Button>
         </div>
-        <Button onClick={exportResults} className="flex items-center">
-          <Download className="w-4 h-4 mr-2" />
-          Exportar Resultados
-        </Button>
       </div>
     </div>
   )

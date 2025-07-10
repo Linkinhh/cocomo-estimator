@@ -99,12 +99,6 @@ export default function Step2ScaleFactors() {
               <p className="text-2xl font-bold text-green-600">{calculateScaleExponent().toFixed(3)}</p>
             </div>
           </div>
-          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-            <p className="text-sm text-blue-800">
-              <strong>Nota:</strong> El exponente de escala se calcula como E = 1.01 + 0.01 × (suma de factores de escala).
-              Un valor más bajo indica mayor economía de escala.
-            </p>
-          </div>
         </CardContent>
       </Card>
 

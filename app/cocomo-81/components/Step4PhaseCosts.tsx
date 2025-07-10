@@ -45,7 +45,7 @@ export default function Step4PhaseCosts() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Paso 4: Configuración de Costos por Fase (Opcional)</CardTitle>
+          <CardTitle>Configuración de Costos por Fase (Opcional)</CardTitle>
           <CardDescription>
             Configure costos y esfuerzos específicos para cada fase del desarrollo
           </CardDescription>

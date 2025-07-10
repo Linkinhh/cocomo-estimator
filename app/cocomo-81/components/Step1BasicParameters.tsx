@@ -52,7 +52,7 @@ export default function Step1BasicParameters() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Paso 1: Parámetros Básicos del Proyecto</CardTitle>
+          <CardTitle>Parámetros Básicos del Proyecto</CardTitle>
           <CardDescription>
             Configure los parámetros fundamentales para la estimación COCOMO 81
           </CardDescription>

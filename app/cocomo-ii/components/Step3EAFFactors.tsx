@@ -133,24 +133,6 @@ export default function Step3EAFFactors() {
               <Label className="text-sm font-medium text-gray-600">Factor de Ajuste de Esfuerzo Total</Label>
               <p className="text-2xl font-bold text-purple-600">{calculateEAF().toFixed(3)}</p>
             </div>
-            <div>
-              <Label className="text-sm font-medium text-gray-600">Factores que Aumentan el Esfuerzo</Label>
-              <p className="text-lg font-semibold text-red-600">
-                {Object.values(state.efMultipliers).filter(v => v > 1.0).length}
-              </p>
-            </div>
-            <div>
-              <Label className="text-sm font-medium text-gray-600">Factores que Reducen el Esfuerzo</Label>
-              <p className="text-lg font-semibold text-green-600">
-                {Object.values(state.efMultipliers).filter(v => v < 1.0).length}
-              </p>
-            </div>
-          </div>
-          <div className="mt-4 p-3 bg-purple-50 rounded-lg">
-            <p className="text-sm text-purple-800">
-              <strong>Nota:</strong> El Factor de Ajuste de Esfuerzo (EAF) es el producto de todos los 
-              multiplicadores. Un valor mayor a 1.0 aumenta el esfuerzo estimado, menor a 1.0 lo reduce.
-            </p>
           </div>
         </CardContent>
       </Card>
