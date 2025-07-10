@@ -12,17 +12,18 @@ import { phases } from '../types'
 export default function Step4PhaseCosts() {
   const { state, updateState, nextStep, prevStep } = useCocomoII()
 
-  const updatePhaseCost = (phase: string, type: 'cost' | 'effort', value: number) => {
+  const updatePhaseCost = (phase: string, type: 'cost' | 'effort', value: string) => {
+    const numberValue = Number.parseInt(value, 10);
     updateState({
       phaseCosts: {
         ...state.phaseCosts,
         [phase]: {
           ...state.phaseCosts[phase as keyof typeof state.phaseCosts],
-          [type]: value
-        }
-      }
-    })
-  }
+          [type]: isNaN(numberValue) ? 0 : numberValue, // Use 0 for invalid input, but the component will show the empty string
+        },
+      },
+    });
+  };
 
   const getTotalEffortDistribution = () => {
     return Object.values(state.phaseCosts).reduce((sum, phase) => sum + phase.effort, 0)
@@ -101,7 +102,7 @@ export default function Step4PhaseCosts() {
                           type="number"
                           min="1000"
                           value={state.phaseCosts[phase.key as keyof typeof state.phaseCosts].cost}
-                          onChange={(e) => updatePhaseCost(phase.key, 'cost', Number.parseInt(e.target.value) || 5000)}
+                          onChange={(e) => updatePhaseCost(phase.key, 'cost', e.target.value)}
                           className="w-32"
                         />
                       </TableCell>
@@ -111,7 +112,7 @@ export default function Step4PhaseCosts() {
                           min="1"
                           max="100"
                           value={state.phaseCosts[phase.key as keyof typeof state.phaseCosts].effort}
-                          onChange={(e) => updatePhaseCost(phase.key, 'effort', Number.parseInt(e.target.value) || 10)}
+                          onChange={(e) => updatePhaseCost(phase.key, 'effort', e.target.value)}
                           className="w-20"
                         />
                       </TableCell>
